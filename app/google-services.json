@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "207879326945",
+    "firebase_url": "https://taskflow-3b05a-default-rtdb.firebaseio.com",
+    "project_id": "taskflow-3b05a",
+    "storage_bucket": "taskflow-3b05a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207879326945:android:996a0dfc9f69e88e21bba0",
+        "android_client_info": {
+          "package_name": "com.example.taskflow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAv-lPQn4LwRm4fnyHkwLHSjGFMZoUnLEw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
