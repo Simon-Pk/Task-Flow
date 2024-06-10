@@ -13,7 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.taskflow.services.ValidationService
+import com.example.taskflow.services.firebase.UserService
 import com.example.taskflow.services.firebase.createUserWithEmail
+import com.example.taskflow.services.firebase.getUser
 import com.example.taskflow.services.firebase.reloadUser
 import com.example.taskflow.services.showError
 import com.ravenzip.workshop.components.SimpleButton
@@ -35,6 +37,7 @@ fun Registration(navigateToHomeScreen: () -> Unit) {
     val isLoading = remember { mutableStateOf(false) }
     val spinnerText = remember { mutableStateOf("Регистрация...") }
     val validationService = ValidationService()
+    val userService = UserService()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -75,6 +78,7 @@ fun Registration(navigateToHomeScreen: () -> Unit) {
                 }
 
                 isLoading.value = false
+                userService.add(getUser())
                 navigateToHomeScreen()
             }
         }

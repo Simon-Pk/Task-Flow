@@ -47,7 +47,7 @@ fun Tasks(padding: PaddingValues) {
 
         Spacer(modifier = Modifier.height(5.dp))
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(count = 100) {
+            items(count = 1) {
                 TaskCard(
                     TaskModel(
                         "Задача ${state.value + it+1}",

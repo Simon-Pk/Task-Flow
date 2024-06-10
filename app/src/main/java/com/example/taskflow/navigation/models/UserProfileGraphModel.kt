@@ -5,4 +5,5 @@ object UserProfileGraph {
     const val SETTINGS_USER = "SETTINGS_USER"
     const val CHANGEPASSWORD = "CHANGEPASSWORD"
     const val CHANGEEMAIL = "CHANGEEMAIL"
+    const val CHANGENAME = "CHANGENAME"
 }

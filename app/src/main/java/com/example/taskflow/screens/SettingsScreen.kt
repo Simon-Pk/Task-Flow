@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.runtime.Composable
@@ -25,6 +26,13 @@ fun SettingsScreen(padding: PaddingValues, vararg onClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        RowIconButton(
+            text = TextParameters("Сменить имя пользователя", 19),
+            icon = IconParameters(Icons.Outlined.Badge)
+        ) {
+            onClick[2]()
+        }
+        Spacer(modifier = Modifier.padding(top = 10.dp))
         RowIconButton(
             text = TextParameters("Сменить email", 19),
             icon = IconParameters(Icons.Outlined.Mail)
