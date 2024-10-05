@@ -12,11 +12,15 @@ import androidx.navigation.compose.rememberNavController
 import com.example.taskflow.navigation.graphs.HomeScreenNavGraph
 import com.example.taskflow.navigation.models.BottomBarGraph
 import com.ravenzip.workshop.components.BottomNavigationBar
-import com.ravenzip.workshop.data.BottomNavigationItem
-import com.ravenzip.workshop.data.IconParameters
+import com.ravenzip.workshop.data.appbar.BottomNavigationItem
+import com.ravenzip.workshop.data.icon.Icon
+import com.ravenzip.workshop.data.icon.IconConfig
 
 @Composable
-fun ScaffoldScreen(navController: NavHostController = rememberNavController()) {
+fun ScaffoldScreen(
+    navController: NavHostController = rememberNavController(),
+    navigateToRegisterScreen: () -> Unit
+) {
     Scaffold(
         bottomBar = {
             BottomNavigationBar(
@@ -29,6 +33,7 @@ fun ScaffoldScreen(navController: NavHostController = rememberNavController()) {
         HomeScreenNavGraph(
             navController = navController,
             padding = it,
+            navigateToRegisterScreen = navigateToRegisterScreen,
         )
     }
 }
@@ -39,7 +44,8 @@ private fun generateMenuItems(): List<BottomNavigationItem> {
         BottomNavigationItem(
             label = "Главная",
             route = BottomBarGraph.HOME,
-            icon = IconParameters(value = Icons.Outlined.Home),
+            icon = Icon.ImageVectorIcon(Icons.Outlined.Home),
+            iconConfig = IconConfig.Primary,
             hasNews = false
         )
 
@@ -47,7 +53,8 @@ private fun generateMenuItems(): List<BottomNavigationItem> {
         BottomNavigationItem(
             label = "Мои задачи",
             route = BottomBarGraph.TASKS,
-            icon = IconParameters(value = Icons.Outlined.TaskAlt),
+            icon = Icon.ImageVectorIcon(Icons.Outlined.TaskAlt),
+            iconConfig = IconConfig.Primary,
             hasNews = false
         )
 
@@ -55,7 +62,8 @@ private fun generateMenuItems(): List<BottomNavigationItem> {
         BottomNavigationItem(
             label = "Входящие",
             route = BottomBarGraph.INCOMINGNOTIFICATIONS,
-            icon = IconParameters(value = Icons.Outlined.Notifications),
+            icon = Icon.ImageVectorIcon(Icons.Outlined.Notifications),
+            iconConfig = IconConfig.Primary,
             hasNews = false
         )
 
@@ -63,7 +71,8 @@ private fun generateMenuItems(): List<BottomNavigationItem> {
         BottomNavigationItem(
             label = "Аккаунт",
             route = BottomBarGraph.USER_PROFILE,
-            icon = IconParameters(value = Icons.Outlined.Person),
+            icon = Icon.ImageVectorIcon(Icons.Outlined.Person),
+            iconConfig = IconConfig.Primary,
             hasNews = false
         )
 

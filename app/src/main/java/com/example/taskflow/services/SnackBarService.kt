@@ -9,41 +9,46 @@ import androidx.compose.material3.SnackbarHostState
 import com.example.taskflow.ui.theme.errorColor
 import com.example.taskflow.ui.theme.successColor
 import com.example.taskflow.ui.theme.warningColor
-import com.ravenzip.workshop.data.IconParameters
-import com.ravenzip.workshop.data.SnackBarVisualsExtended
+import com.ravenzip.workshop.data.SnackBarVisualsConfig
+import com.ravenzip.workshop.data.icon.Icon
+import com.ravenzip.workshop.data.icon.IconConfig
 
 suspend fun SnackbarHostState.showMessage(message: String) {
     this.showSnackbar(
-        SnackBarVisualsExtended(
+        SnackBarVisualsConfig(
             message = message,
-            icon = IconParameters(value = Icons.Outlined.Info)
+            icon = Icon.ImageVectorIcon(Icons.Outlined.Info),
+            iconConfig = IconConfig()
         )
     )
 }
 
 suspend fun SnackbarHostState.showSuccess(message: String) {
     this.showSnackbar(
-        SnackBarVisualsExtended(
+        SnackBarVisualsConfig(
             message = message,
-            icon = IconParameters(value = Icons.Outlined.Done, color = successColor)
+            icon = Icon.ImageVectorIcon(Icons.Outlined.Done),
+            iconConfig = IconConfig(color = successColor)
         )
     )
 }
 
 suspend fun SnackbarHostState.showWarning(message: String) {
     this.showSnackbar(
-        SnackBarVisualsExtended(
+        SnackBarVisualsConfig(
             message = message,
-            icon = IconParameters(value = Icons.Outlined.Warning, color = warningColor)
+            icon = Icon.ImageVectorIcon(Icons.Outlined.Warning),
+            iconConfig = IconConfig(color = warningColor)
         )
     )
 }
 
 suspend fun SnackbarHostState.showError(message: String) {
     this.showSnackbar(
-        SnackBarVisualsExtended(
+        SnackBarVisualsConfig(
             message = message,
-            icon = IconParameters(value = Icons.Outlined.Error, color = errorColor)
+            icon = Icon.ImageVectorIcon(Icons.Outlined.Error),
+            iconConfig = IconConfig(color = errorColor)
         )
     )
 }

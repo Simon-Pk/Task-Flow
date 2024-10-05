@@ -14,9 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ravenzip.workshop.components.RowIconButton
-import com.ravenzip.workshop.data.IconParameters
-import com.ravenzip.workshop.data.TextParameters
+import com.ravenzip.workshop.data.TextConfig
+import com.ravenzip.workshop.data.icon.Icon
+import com.ravenzip.workshop.data.icon.IconConfig
 
 @Composable
 fun SettingsScreen(padding: PaddingValues, vararg onClick: () -> Unit) {
@@ -27,22 +29,28 @@ fun SettingsScreen(padding: PaddingValues, vararg onClick: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         RowIconButton(
-            text = TextParameters("Сменить имя пользователя", 19),
-            icon = IconParameters(Icons.Outlined.Badge)
+            text = "Сменить имя пользователя",
+            textConfig = TextConfig(size = 19.sp),
+            icon = Icon.ImageVectorIcon(Icons.Outlined.Badge),
+            iconConfig = IconConfig.Primary
         ) {
             onClick[2]()
         }
         Spacer(modifier = Modifier.padding(top = 10.dp))
         RowIconButton(
-            text = TextParameters("Сменить email", 19),
-            icon = IconParameters(Icons.Outlined.Mail)
+            text = "Сменить email",
+            textConfig = TextConfig(size = 19.sp),
+            icon = Icon.ImageVectorIcon(Icons.Outlined.Mail),
+            iconConfig = IconConfig.Primary
         ) {
             onClick[1]()
         }
         Spacer(modifier = Modifier.padding(top = 10.dp))
         RowIconButton(
-            text = TextParameters("Сменить пароль", 19),
-            icon = IconParameters(Icons.Outlined.Key)
+            text = "Сменить пароль",
+            textConfig = TextConfig(size = 19.sp),
+            icon = Icon.ImageVectorIcon(Icons.Outlined.Key),
+            iconConfig = IconConfig.Primary
         ) {
             onClick[0]()
         }

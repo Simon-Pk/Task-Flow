@@ -22,7 +22,7 @@ import com.example.taskflow.services.showSuccess
 import com.ravenzip.workshop.components.SimpleButton
 import com.ravenzip.workshop.components.SinglenessTextField
 import com.ravenzip.workshop.components.SnackBar
-import com.ravenzip.workshop.data.TextParameters
+import com.ravenzip.workshop.data.TextConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -40,7 +40,8 @@ fun ForgotPassword() {
         SinglenessTextField(text = email, label = "Email")
         Spacer(modifier = Modifier.padding(top = 5.dp))
         SimpleButton(
-            text = TextParameters("Сбросить пароль", size = 14),
+            text = "Сбросить пароль",
+            textConfig = TextConfig.Small,
             colors =
                 ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.background,

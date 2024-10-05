@@ -20,6 +20,7 @@ import com.example.taskflow.services.firebase.getUser
 fun HomeScreenNavGraph(
     navController: NavHostController,
     padding: PaddingValues,
+    navigateToRegisterScreen: () -> Unit,
 ) {
     val userService = remember { mutableStateOf(UserService()) }
     val isLoadingUser = remember { mutableStateOf(true) }
@@ -43,7 +44,8 @@ fun HomeScreenNavGraph(
         userProfileNavigationGraph(
             padding,
             navController = navController,
-            userService = userService
+            userService = userService,
+            navigateToRegisterScreen = navigateToRegisterScreen,
         )
     }
 }

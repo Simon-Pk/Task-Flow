@@ -18,7 +18,8 @@ import com.example.taskflow.services.firebase.UserService
 fun NavGraphBuilder.userProfileNavigationGraph(
     padding: PaddingValues,
     navController: NavHostController,
-    userService: MutableState<UserService>
+    userService: MutableState<UserService>,
+    navigateToRegisterScreen: () -> Unit,
 ) {
     navigation(
         route = BottomBarGraph.USER_PROFILE,
@@ -27,7 +28,8 @@ fun NavGraphBuilder.userProfileNavigationGraph(
         composable(route = UserProfileGraph.USER_PROFILE_START) {
             UserProfile(
                 padding = padding,
-                onClick = arrayOf({ navController.navigate(UserProfileGraph.SETTINGS_USER) })
+                onClick = arrayOf({ navController.navigate(UserProfileGraph.SETTINGS_USER) }),
+                navigateToRegisterScreen = navigateToRegisterScreen,
             )
         }
         composable(route = UserProfileGraph.SETTINGS_USER) {

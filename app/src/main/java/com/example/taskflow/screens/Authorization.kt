@@ -22,7 +22,7 @@ import com.ravenzip.workshop.components.SimpleButton
 import com.ravenzip.workshop.components.SinglenessTextField
 import com.ravenzip.workshop.components.SnackBar
 import com.ravenzip.workshop.components.Spinner
-import com.ravenzip.workshop.data.TextParameters
+import com.ravenzip.workshop.data.TextConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -44,7 +44,7 @@ fun Authorization(navigateToHomeScreen: () -> Unit, navigateToForgotPassScreen: 
         SinglenessTextField(text = email, label = "Email")
         SinglenessTextField(text = password, label = "Password", isHiddenText = true)
         Spacer(modifier = Modifier.padding(top = 20.dp))
-        SimpleButton(text = TextParameters("Войти", size = 14)) {
+        SimpleButton(text = "Войти", textConfig = TextConfig.Small) {
             scope.launch(Dispatchers.Main) {
                 isEmailValid.value = validationService.isEmailValid(email.value)
                 isPasswordValid.value = validationService.isPasswordValid(password.value)
@@ -77,7 +77,8 @@ fun Authorization(navigateToHomeScreen: () -> Unit, navigateToForgotPassScreen: 
         }
         Spacer(modifier = Modifier.padding(top = 5.dp))
         SimpleButton(
-            text = TextParameters("Забыли пароль?", size = 14),
+            text = "Забыли пароль?",
+            textConfig = TextConfig.Small,
             colors =
                 ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.background,
@@ -88,7 +89,7 @@ fun Authorization(navigateToHomeScreen: () -> Unit, navigateToForgotPassScreen: 
         }
     }
     if (isLoading.value) {
-        Spinner(text = TextParameters(value = spinnerText.value, size = 16))
+        Spinner(text = spinnerText.value, textConfig = TextConfig.Normal)
     }
 
     SnackBar(snackBarHostState = snackBarHostState)

@@ -21,7 +21,7 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.ravenzip.workshop.components.SimpleButton
 import com.ravenzip.workshop.components.SinglenessTextField
 import com.ravenzip.workshop.components.SnackBar
-import com.ravenzip.workshop.data.TextParameters
+import com.ravenzip.workshop.data.TextConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -40,7 +40,7 @@ fun ChangeEmail(padding: PaddingValues) {
         SinglenessTextField(text = password, label = "Password", isHiddenText = true)
         SinglenessTextField(text = email, label = "Email", isHiddenText = false)
         Spacer(modifier = Modifier.padding(top = 20.dp))
-        SimpleButton(text = TextParameters("Изменить", size = 14)) {
+        SimpleButton(text = "Изменить", textConfig = TextConfig.Small) {
             scope.launch(Dispatchers.Main) {
                 if (UpdateEmail(email.value, password.value)) {
                     snackBarHostState.showSuccess(

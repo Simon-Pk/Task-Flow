@@ -16,6 +16,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.taskflow.data.User
 import com.example.taskflow.services.firebase.UserService
 import com.example.taskflow.services.firebase.getUser
@@ -24,7 +25,7 @@ import com.example.taskflow.services.showSuccess
 import com.ravenzip.workshop.components.SimpleButton
 import com.ravenzip.workshop.components.SinglenessTextField
 import com.ravenzip.workshop.components.SnackBar
-import com.ravenzip.workshop.data.TextParameters
+import com.ravenzip.workshop.data.TextConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -49,7 +50,8 @@ fun ChangeName(padding: PaddingValues, userService: MutableState<UserService>) {
         SinglenessTextField(text = name, label = "Имя пользователя")
         Spacer(modifier = Modifier.height(40.dp))
         SimpleButton(
-            text = TextParameters(value = "Сохранить", size = 19),
+            text = "Сохранить",
+            textConfig = TextConfig(size = 19.sp),
         ) {
             scope.launch(Dispatchers.Main) {
                 if (name.value == "") {

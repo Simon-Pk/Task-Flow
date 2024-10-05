@@ -1,6 +1,16 @@
 package com.example.taskflow.screens
 
-import androidx.compose.foundation.layout.Box
+import android.content.ClipData
+import android.content.ClipDescription
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.draganddrop.dragAndDropSource
+import androidx.compose.foundation.draganddrop.dragAndDropTarget
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -10,85 +20,111 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draganddrop.DragAndDropEvent
+import androidx.compose.ui.draganddrop.DragAndDropTarget
+import androidx.compose.ui.draganddrop.DragAndDropTransferData
+import androidx.compose.ui.draganddrop.mimeTypes
+import androidx.compose.ui.draganddrop.toAndroidDragEvent
 import androidx.compose.ui.unit.dp
 import com.example.taskflow.TaskModel
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Tasks(padding: PaddingValues) {
-    var state = remember { mutableStateOf(0) }
     val Titles = listOf("Недавно назначенные", "В работе", "Ожидание обратной связи", "Выполненные")
-    val ListColors = listOf(Color.Green, Color.Red, Color.Blue, Color.DarkGray)
+    val pagerState = rememberPagerState(pageCount = { 4 })
+    val scope = rememberCoroutineScope()
+    val dragBoxIndex = remember { mutableIntStateOf(0) }
     Column {
         ScrollableTabRow(
-            selectedTabIndex = state.value,
+            selectedTabIndex = pagerState.currentPage,
             modifier = Modifier.wrapContentWidth(),
             edgePadding = 16.dp
         ) {
             Titles.forEachIndexed { index, title ->
                 Tab(
                     text = { Text(title) },
-                    selected = state.value == index,
-                    onClick = { state.value = index }
+                    selected = pagerState.currentPage == index,
+                    onClick = { scope.launch { pagerState.scrollToPage(index) } }
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(5.dp))
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(count = 1) {
-                TaskCard(
-                    TaskModel(
-                        "Задача ${state.value + it+1}",
-                        "Содержание задачи ${state.value + it+1}"
-                    )
-                )
+        //
+        HorizontalPager(state = pagerState) { state ->
+            LazyColumn(
+                modifier =
+                    Modifier.fillMaxSize()
+                        .dragAndDropTarget(
+                            shouldStartDragAndDrop = { event ->
+                                event.mimeTypes().contains(ClipDescription.MIMETYPE_TEXT_PLAIN)
+                            },
+                            target =
+                                remember {
+                                    object : DragAndDropTarget {
+                                        override fun onDrop(event: DragAndDropEvent): Boolean {
+                                            val text =
+                                                event
+                                                    .toAndroidDragEvent()
+                                                    .clipData
+                                                    ?.getItemAt(0)
+                                                    ?.text
+                                            dragBoxIndex.value = state
+                                            return true
+                                        }
+                                    }
+                                }
+                        )
+            ) {
+                items(count = 2) {
+                    TaskCard(TaskModel("Задача ${it+1}", "Содержание задачи"), state, dragBoxIndex)
+                }
             }
         }
-
-        //        Text(
-        //            modifier = Modifier.align(Alignment.CenterHorizontally),
-        //            text = "Задача ${state.value + 1}",
-        //            //            style = MaterialTheme.typography.body1
-        //        )
-        //        LazyRow(modifier = Modifier.fillMaxWidth()) {
-        //            items(count = 4) {
-        //                Text(
-        //                    text = "Колонка ${state.value + it+1}",
-        //                    modifier = Modifier.fillParentMaxWidth(1f).background(color =
-        // ListColors[it]),
-        //                )
-        //            }
-        //        }
-        //
-        //        LazyColumn(modifier = Modifier.fillMaxSize()) {
-        //            items(count = 100) {
-        //                TaskCard(
-        //                    TaskModel(
-        //                        "Задача ${state.value + it+1}",
-        //                        "Содержание задачи ${state.value + it+1}"
-        //                    )
-        //                )
-        //            }
-        //        }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TaskCard(TaskItem: TaskModel) {
-    Card(modifier = Modifier.fillMaxWidth().padding(10.dp), shape = RoundedCornerShape(15.dp)) {
-        Box() {
+fun TaskCard(TaskItem: TaskModel, index: Int, dragBoxIndex: MutableIntState) {
+    Card(
+        modifier =
+            Modifier.fillMaxWidth().padding(10.dp).dragAndDropSource {
+                detectTapGestures(
+                    onLongPress = { offset ->
+                        startTransfer(
+                            transferData =
+                                DragAndDropTransferData(
+                                    clipData = ClipData.newPlainText("text", "")
+                                )
+                        )
+                    }
+                )
+            },
+        shape = RoundedCornerShape(15.dp)
+    ) {
+        AnimatedVisibility(
+            visible = index == dragBoxIndex.value,
+            enter = scaleIn() + fadeIn(),
+            exit = scaleOut() + fadeOut()
+        ) {
             Column() {
                 Text(modifier = Modifier.padding(5.dp), text = TaskItem.title)
                 Spacer(modifier = Modifier.height(15.dp))

@@ -17,7 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.taskflow.R
 import com.ravenzip.workshop.components.SimpleButton
-import com.ravenzip.workshop.data.TextParameters
+import com.ravenzip.workshop.data.TextConfig
 
 @Composable
 fun Welcome(navigateToRegistrationScreen: () -> Unit, navigateToLoginScreen: () -> Unit) {
@@ -33,12 +33,17 @@ fun Welcome(navigateToRegistrationScreen: () -> Unit, navigateToLoginScreen: () 
             modifier = Modifier.size(200.dp)
         )
         Spacer(modifier = Modifier.padding(top = 20.dp))
-        SimpleButton(text = TextParameters("Вход", size = 14), shape = RoundedCornerShape(100)) {
+        SimpleButton(
+            text = "Вход",
+            textConfig = TextConfig.Small,
+            shape = RoundedCornerShape(100)
+        ) {
             navigateToLoginScreen()
         }
         Spacer(modifier = Modifier.padding(top = 20.dp))
         SimpleButton(
-            text = TextParameters("Регистрация", size = 14),
+            text = "Регистрация",
+            textConfig = TextConfig.Small,
             shape = RoundedCornerShape(100)
         ) {
             navigateToRegistrationScreen()
