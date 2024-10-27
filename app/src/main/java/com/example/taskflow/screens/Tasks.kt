@@ -20,14 +20,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -40,13 +48,15 @@ import com.example.taskflow.TaskModel
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Tasks(padding: PaddingValues) {
     val Titles = listOf("Недавно назначенные", "В работе", "Ожидание обратной связи", "Выполненные")
     val pagerState = rememberPagerState(pageCount = { 4 })
     val scope = rememberCoroutineScope()
-
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    var priorityText = "Приоритет:"
     // Переменная для хранения смещения
     Box(modifier = Modifier.padding(padding)) {
         Column {
@@ -81,10 +91,33 @@ fun Tasks(padding: PaddingValues) {
             }
         }
         FloatingActionButton(
-            onClick = {},
+            onClick = { showBottomSheet = true },
             modifier = Modifier.align(Alignment.BottomEnd).padding(end = 10.dp, bottom = 10.dp)
         ) {
             Icon(Icons.Filled.Add, contentDescription = "Добавить")
+        }
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showBottomSheet = false },
+                sheetState = sheetState
+            ) {
+                // Sheet content
+                var expanded by remember { mutableStateOf(false) }
+
+                Box {
+                    TextButton(onClick = { expanded = true }) { Text(priorityText) }
+
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        DropdownMenuItem(
+                            onClick = { priorityText = priorityText + " Низкий" },
+                            text = { Text("Низкий") }
+                        )
+                        DropdownMenuItem(onClick = {}, text = { Text("Средний") })
+                        Divider()
+                        DropdownMenuItem(onClick = {}, text = { Text("Высокий") })
+                    }
+                }
+            }
         }
     }
 }
