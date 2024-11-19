@@ -14,7 +14,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.taskflow.navigation.graphs.RootNavigationGraph
 import com.example.taskflow.services.SplashScreenService
 import com.example.taskflow.ui.theme.TaskFlowTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val splashScreenService: SplashScreenService by viewModels()
 

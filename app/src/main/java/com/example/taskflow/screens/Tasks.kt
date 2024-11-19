@@ -20,9 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -30,7 +27,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,19 +40,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskflow.TaskModel
+import com.example.taskflow.viewmodels.TaskViewModel
+import com.ravenzip.workshop.components.ChipRadioGroup
+import com.ravenzip.workshop.components.MultilineTextField
+import com.ravenzip.workshop.components.SinglenessTextField
+import com.ravenzip.workshop.data.icon.Icon
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Tasks(padding: PaddingValues) {
+fun Tasks(padding: PaddingValues, taskViewModel: TaskViewModel = hiltViewModel<TaskViewModel>()) {
     val Titles = listOf("Недавно назначенные", "В работе", "Ожидание обратной связи", "Выполненные")
     val pagerState = rememberPagerState(pageCount = { 4 })
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
-    var priorityText = "Приоритет:"
+    val taskName = remember { mutableStateOf("") }
+    val taskContent = remember { mutableStateOf("") }
+    val openDialog = remember { mutableStateOf(false) }
+    var dateResult by remember { mutableStateOf("No date") }
+    val prioritiesChips = taskViewModel.prioritiesChips.collectAsStateWithLifecycle().value
     // Переменная для хранения смещения
     Box(modifier = Modifier.padding(padding)) {
         Column {
@@ -99,23 +106,58 @@ fun Tasks(padding: PaddingValues) {
         if (showBottomSheet) {
             ModalBottomSheet(
                 onDismissRequest = { showBottomSheet = false },
-                sheetState = sheetState
+                sheetState = sheetState,
             ) {
                 // Sheet content
-                var expanded by remember { mutableStateOf(false) }
 
-                Box {
-                    TextButton(onClick = { expanded = true }) { Text(priorityText) }
-
-                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        DropdownMenuItem(
-                            onClick = { priorityText = priorityText + " Низкий" },
-                            text = { Text("Низкий") }
-                        )
-                        DropdownMenuItem(onClick = {}, text = { Text("Средний") })
-                        Divider()
-                        DropdownMenuItem(onClick = {}, text = { Text("Высокий") })
-                    }
+                Column(modifier = Modifier.padding(padding)) {
+                    SinglenessTextField(text = taskName, label = "name")
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Text("Приоритет:")
+                    ChipRadioGroup(list = prioritiesChips)
+                    Spacer(modifier = Modifier.height(5.dp))
+                    //                    Text("Сложность:")
+                    //                    ChipRadioGroup(list = list) { item ->
+                    //                        list.replaceAll { it.copy(isSelected = it.text ==
+                    // item.text) }
+                    //                    }
+                    Spacer(modifier = Modifier.height(5.dp))
+                    MultilineTextField(text = taskContent, label = "content")
+                    Spacer(modifier = Modifier.height(5.dp))
+                    //                    OutlinedButton(onClick = { openDialog.value = true }) {
+                    // Text(dateResult) }
+                    //                    if (openDialog.value) {
+                    //                        val datePickerState = rememberDatePickerState()
+                    //                        val confirmEnabled = derivedStateOf {
+                    //                            datePickerState.selectedDateMillis != null
+                    //                        }
+                    //
+                    //                        DatePickerDialog(
+                    //                            onDismissRequest = { openDialog.value = false },
+                    //                            confirmButton = {
+                    //                                TextButton(
+                    //                                    onClick = {
+                    //                                        openDialog.value = false
+                    //                                        var date = "No selection"
+                    //                                        if (datePickerState.selectedDateMillis
+                    // != null) {
+                    //                                            date =
+                    //                                                convertLongToDate(
+                    //
+                    // datePickerState.selectedDateMillis!!
+                    //                                                )
+                    //                                        }
+                    //                                        dateResult = date
+                    //                                    },
+                    //                                    enabled = confirmEnabled.value
+                    //                                ) {
+                    //                                    Text(text = "Okay")
+                    //                                }
+                    //                            }
+                    //                        ) {
+                    //                            DatePicker(state = datePickerState)
+                    //                        }
+                    //                    }
                 }
             }
         }
