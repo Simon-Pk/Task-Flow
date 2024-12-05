@@ -13,13 +13,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.taskflow.services.firebase.getUser
 import com.example.taskflow.services.showError
 import com.example.taskflow.services.showSuccess
 import com.google.firebase.auth.EmailAuthProvider
 import com.ravenzip.workshop.components.SimpleButton
-import com.ravenzip.workshop.components.SinglenessTextField
+import com.ravenzip.workshop.components.SinglenessOutlinedTextField
 import com.ravenzip.workshop.components.SnackBar
 import com.ravenzip.workshop.data.TextConfig
 import kotlinx.coroutines.Dispatchers
@@ -38,10 +40,13 @@ fun ChangePassword(padding: PaddingValues) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        SinglenessTextField(text = oldPassword, label = "Old password", isHiddenText = true)
-        SinglenessTextField(text = newPassword, label = "New password", isHiddenText = true)
+        SinglenessOutlinedTextField(text = oldPassword, label = "Old password", isHiddenText = true)
+        SinglenessOutlinedTextField(text = newPassword, label = "New password", isHiddenText = true)
         Spacer(modifier = Modifier.padding(top = 20.dp))
-        SimpleButton(text = "Изменить", textConfig = TextConfig.Small) {
+        SimpleButton(
+            text = "Изменить",
+            textConfig = TextConfig(size = 14.sp, align = TextAlign.Center)
+        ) {
             scope.launch(Dispatchers.Main) {
                 if (UpdatePassword(oldPassword.value, newPassword.value)) {
                     snackBarHostState.showSuccess(message = "Пароль изменен")

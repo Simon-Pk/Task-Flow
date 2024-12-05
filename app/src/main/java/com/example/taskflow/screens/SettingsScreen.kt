@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ravenzip.workshop.components.RowIconButton
@@ -30,7 +31,7 @@ fun SettingsScreen(padding: PaddingValues, vararg onClick: () -> Unit) {
     ) {
         RowIconButton(
             text = "Сменить имя пользователя",
-            textConfig = TextConfig(size = 19.sp),
+            textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
             icon = Icon.ImageVectorIcon(Icons.Outlined.Badge),
             iconConfig = IconConfig.Primary
         ) {
@@ -39,7 +40,7 @@ fun SettingsScreen(padding: PaddingValues, vararg onClick: () -> Unit) {
         Spacer(modifier = Modifier.padding(top = 10.dp))
         RowIconButton(
             text = "Сменить email",
-            textConfig = TextConfig(size = 19.sp),
+            textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
             icon = Icon.ImageVectorIcon(Icons.Outlined.Mail),
             iconConfig = IconConfig.Primary
         ) {
@@ -48,7 +49,7 @@ fun SettingsScreen(padding: PaddingValues, vararg onClick: () -> Unit) {
         Spacer(modifier = Modifier.padding(top = 10.dp))
         RowIconButton(
             text = "Сменить пароль",
-            textConfig = TextConfig(size = 19.sp),
+            textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
             icon = Icon.ImageVectorIcon(Icons.Outlined.Key),
             iconConfig = IconConfig.Primary
         ) {

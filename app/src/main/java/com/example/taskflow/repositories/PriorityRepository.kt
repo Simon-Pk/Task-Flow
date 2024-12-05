@@ -4,7 +4,8 @@ import android.util.Log
 import com.example.taskflow.Tools.convertToClass
 import com.example.taskflow.data.Priority
 import com.example.taskflow.sources.PrioritySources
-import com.google.firebase.database.getValue
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.FirebaseDatabase
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
@@ -25,4 +26,19 @@ class PriorityRepository @Inject constructor(private val prioritySources: Priori
                 withContext(Dispatchers.Main) { Log.e("getPriorityList", "${it.message}") }
                 emit(listOf())
             }
+
+    suspend fun createPriorityData(priority: Priority) {
+        val firebase = FirebaseDatabase.getInstance()
+        //        val priorityRef = firebase.getReference("Priorities")
+        val priorityUID = firebase.reference.push().key.toString()
+        prioritySources
+            .prioritySource()
+            .child(priorityUID)
+            .setValue(priority.copy(uid = priorityUID))
+            .await()
+    }
+
+    suspend fun getPriority(priorityUid: String): Iterable<DataSnapshot> {
+        return prioritySources.prioritySource().child(priorityUid).get().await().children
+    }
 }

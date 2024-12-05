@@ -1,6 +1,7 @@
 package com.example.taskflow.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -29,6 +31,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,33 +41,50 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.taskflow.TaskModel
+import com.example.taskflow.data.Priority
+import com.example.taskflow.data.TaskModel
+import com.example.taskflow.data.User
 import com.example.taskflow.viewmodels.TaskViewModel
-import com.ravenzip.workshop.components.ChipRadioGroup
+import com.ravenzip.workshop.components.DropDownTextField
 import com.ravenzip.workshop.components.MultilineTextField
-import com.ravenzip.workshop.components.SinglenessTextField
-import com.ravenzip.workshop.data.icon.Icon
+import com.ravenzip.workshop.components.SimpleButton
+import com.ravenzip.workshop.components.SinglenessOutlinedTextField
+import com.ravenzip.workshop.data.TextConfig
+import java.text.SimpleDateFormat
+import java.util.Date
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Tasks(padding: PaddingValues, taskViewModel: TaskViewModel = hiltViewModel<TaskViewModel>()) {
-    val Titles = listOf("Недавно назначенные", "В работе", "Ожидание обратной связи", "Выполненные")
+fun Tasks(
+    padding: PaddingValues,
+    taskViewModel: TaskViewModel = hiltViewModel<TaskViewModel>(),
+    vararg onClick: () -> Unit,
+    taskModel: MutableState<TaskModel>
+) {
     val pagerState = rememberPagerState(pageCount = { 4 })
     val scope = rememberCoroutineScope()
-    var showBottomSheet by remember { mutableStateOf(false) }
+    val showBottomSheet = remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val taskName = remember { mutableStateOf("") }
     val taskContent = remember { mutableStateOf("") }
-    val openDialog = remember { mutableStateOf(false) }
-    var dateResult by remember { mutableStateOf("No date") }
-    val prioritiesChips = taskViewModel.prioritiesChips.collectAsStateWithLifecycle().value
-    // Переменная для хранения смещения
+
+    val priorityList = taskViewModel.priorityList.collectAsStateWithLifecycle().value
+    val userList = taskViewModel.userList.collectAsStateWithLifecycle().value
+    val statusList = taskViewModel.statusList.collectAsStateWithLifecycle().value
+    val currentTabTasks = taskViewModel.currentTabTasks.collectAsStateWithLifecycle().value
+    val taskDateformat = SimpleDateFormat("dd.M.yyyy")
+    val currentDate = taskDateformat.format(Date())
+    val taskStartDate = remember { mutableStateOf(currentDate) }
+    val dropDownFieldExecutorState = remember { mutableStateOf<User>(User()) }
+    val dropDownFieldPriorityState = remember { mutableStateOf<Priority>(Priority()) }
     Box(modifier = Modifier.padding(padding)) {
         Column {
             ScrollableTabRow(
@@ -72,11 +92,17 @@ fun Tasks(padding: PaddingValues, taskViewModel: TaskViewModel = hiltViewModel<T
                 modifier = Modifier.wrapContentWidth(),
                 edgePadding = 16.dp
             ) {
-                Titles.forEachIndexed { index, title ->
+                statusList.forEachIndexed { index, title ->
                     Tab(
-                        text = { Text(title) },
+                        text = { Text(title.name) },
                         selected = pagerState.currentPage == index,
-                        onClick = { scope.launch { pagerState.scrollToPage(index) } }
+                        onClick = {
+                            scope.launch {
+                                pagerState.scrollToPage(index)
+
+                                taskViewModel.activeTabChanged.emit(title.uid)
+                            }
+                        }
                     )
                 }
             }
@@ -85,12 +111,39 @@ fun Tasks(padding: PaddingValues, taskViewModel: TaskViewModel = hiltViewModel<T
 
             HorizontalPager(state = pagerState) { pageIndex ->
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(count = 1) { taskIndex ->
+                    items(currentTabTasks) { task ->
                         TaskCard(
-                            taskItem = TaskModel("Задача ${taskIndex + 1}", "Содержание задачи"),
+                            taskItem = task,
                             pagerState = pagerState,
-                            onPageChange = { newPageIndex ->
+                            changeCurrentPage = { newPageIndex ->
                                 scope.launch { pagerState.animateScrollToPage(newPageIndex) }
+                            },
+                            onClick = {
+                                taskModel.value = task
+                                onClick[0]()
+                                //                                taskName.value = task.title
+                                //                                taskContent.value = task.content
+                                //                                taskStartDate.value =
+                                // task.startDate
+                                //                                scope.launch {
+                                //
+                                //                                    //
+                                //                                    //
+                                // dropDownFieldExecutorState.value = task.executor
+                                //
+                                //                                    //
+                                //                                    //
+                                // dropDownFieldPriorityState.value =
+                                //                                    //
+                                //            taskViewModel
+                                //                                    //
+                                //                                    // .getPriority(task.priority)
+                                //                                    //
+                                //                                    // .convertToClass<Priority>()
+                                //                                    //
+                                //                .get(index = 0)
+                                //                                }
+                                //                                showBottomSheet.value = true
                             }
                         )
                     }
@@ -98,66 +151,87 @@ fun Tasks(padding: PaddingValues, taskViewModel: TaskViewModel = hiltViewModel<T
             }
         }
         FloatingActionButton(
-            onClick = { showBottomSheet = true },
+            onClick = { showBottomSheet.value = true },
             modifier = Modifier.align(Alignment.BottomEnd).padding(end = 10.dp, bottom = 10.dp)
         ) {
             Icon(Icons.Filled.Add, contentDescription = "Добавить")
         }
-        if (showBottomSheet) {
+        if (showBottomSheet.value) {
             ModalBottomSheet(
-                onDismissRequest = { showBottomSheet = false },
+                onDismissRequest = { CloseModalSheetList(showBottomSheet, taskName, taskContent) },
                 sheetState = sheetState,
             ) {
-                // Sheet content
+                //                val currentPriority =
+                //
+                // taskViewModel.selectedPriority.collectAsStateWithLifecycle().value
 
-                Column(modifier = Modifier.padding(padding)) {
-                    SinglenessTextField(text = taskName, label = "name")
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(padding),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    SinglenessOutlinedTextField(text = taskName, label = "name")
+
                     Spacer(modifier = Modifier.height(5.dp))
-                    Text("Приоритет:")
-                    ChipRadioGroup(list = prioritiesChips)
+
+                    //                    Text("Приоритет:")
+
+                    //                    ChipRadioGroup(list = prioritiesChips)
+                    DropDownTextField(
+                        dropDownFieldPriorityState,
+                        priorityList,
+                        { it.name },
+                        label = "Приоритет"
+                    )
+
                     Spacer(modifier = Modifier.height(5.dp))
                     //                    Text("Сложность:")
+
                     //                    ChipRadioGroup(list = list) { item ->
                     //                        list.replaceAll { it.copy(isSelected = it.text ==
                     // item.text) }
                     //                    }
                     Spacer(modifier = Modifier.height(5.dp))
+
                     MultilineTextField(text = taskContent, label = "content")
+
                     Spacer(modifier = Modifier.height(5.dp))
-                    //                    OutlinedButton(onClick = { openDialog.value = true }) {
-                    // Text(dateResult) }
-                    //                    if (openDialog.value) {
-                    //                        val datePickerState = rememberDatePickerState()
-                    //                        val confirmEnabled = derivedStateOf {
-                    //                            datePickerState.selectedDateMillis != null
-                    //                        }
-                    //
-                    //                        DatePickerDialog(
-                    //                            onDismissRequest = { openDialog.value = false },
-                    //                            confirmButton = {
-                    //                                TextButton(
-                    //                                    onClick = {
-                    //                                        openDialog.value = false
-                    //                                        var date = "No selection"
-                    //                                        if (datePickerState.selectedDateMillis
-                    // != null) {
-                    //                                            date =
-                    //                                                convertLongToDate(
-                    //
-                    // datePickerState.selectedDateMillis!!
-                    //                                                )
-                    //                                        }
-                    //                                        dateResult = date
-                    //                                    },
-                    //                                    enabled = confirmEnabled.value
-                    //                                ) {
-                    //                                    Text(text = "Okay")
-                    //                                }
-                    //                            }
-                    //                        ) {
-                    //                            DatePicker(state = datePickerState)
-                    //                        }
-                    //                    }
+
+                    SinglenessOutlinedTextField(
+                        text = taskStartDate,
+                        label = "Дата начала",
+                        readOnly = true
+                    )
+
+                    DropDownTextField(
+                        dropDownFieldExecutorState,
+                        userList,
+                        { it.name },
+                        label = "Исполнитель"
+                    )
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    Spacer(modifier = Modifier.height(5.dp))
+                    SimpleButton(
+                        text = "Создать",
+                        textConfig = TextConfig(size = 14.sp, align = TextAlign.Center)
+                    ) {
+                        scope.launch {
+                            taskViewModel.createTask(
+                                TaskModel(
+                                    "",
+                                    taskName.value,
+                                    statusList.get(0).uid,
+                                    taskContent.value,
+                                    dropDownFieldExecutorState.value.id,
+                                    "",
+                                    dropDownFieldPriorityState.value.uid,
+                                    taskStartDate.value
+                                )
+                            )
+                            CloseModalSheetList(showBottomSheet, taskName, taskContent)
+                        }
+                    }
                 }
             }
         }
@@ -166,7 +240,12 @@ fun Tasks(padding: PaddingValues, taskViewModel: TaskViewModel = hiltViewModel<T
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TaskCard(taskItem: TaskModel, pagerState: PagerState, onPageChange: (Int) -> Unit) {
+fun TaskCard(
+    taskItem: TaskModel,
+    pagerState: PagerState,
+    changeCurrentPage: (Int) -> Unit,
+    onClick: () -> Unit
+) {
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
 
@@ -186,20 +265,31 @@ fun TaskCard(taskItem: TaskModel, pagerState: PagerState, onPageChange: (Int) ->
                         // Логика смены страницы, если карточка выходит за пределы экрана
                         val currentPage = pagerState.currentPage
                         if (offsetX > 300 && currentPage < pagerState.pageCount - 1) {
-                            onPageChange(currentPage + 1) // Переход на следующую страницу
+                            changeCurrentPage(currentPage + 1) // Переход на следующую страницу
                             offsetX = 0f // Сброс смещения для правильного позиционирования
                         } else if (offsetX < -300 && currentPage > 0) {
-                            onPageChange(currentPage - 1) // Переход на предыдущую страницу
+                            changeCurrentPage(currentPage - 1) // Переход на предыдущую страницу
                             offsetX = 0f // Сброс смещения
                         }
                     }
-                },
+                }
+                .clickable { onClick() },
         shape = RoundedCornerShape(15.dp)
     ) {
         Column {
-            Text(modifier = Modifier.padding(5.dp), text = taskItem.title)
+            Text(modifier = Modifier.padding(start = 15.dp), text = taskItem.title)
             Spacer(modifier = Modifier.height(15.dp))
-            Text(modifier = Modifier.padding(5.dp), text = taskItem.content)
+            Text(modifier = Modifier.padding(start = 15.dp), text = taskItem.content)
         }
     }
+}
+
+fun CloseModalSheetList(
+    showBottomSheet: MutableState<Boolean>,
+    taskName: MutableState<String>,
+    taskContent: MutableState<String>,
+) {
+    showBottomSheet.value = false
+    taskName.value = ""
+    taskContent.value = ""
 }

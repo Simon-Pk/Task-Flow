@@ -8,11 +8,11 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.taskflow.data.TaskModel
 import com.example.taskflow.navigation.models.BottomBarGraph
 import com.example.taskflow.navigation.models.RootGraph
 import com.example.taskflow.screens.Home
 import com.example.taskflow.screens.IncomingNotifications
-import com.example.taskflow.screens.Tasks
 import com.example.taskflow.services.firebase.UserService
 import com.example.taskflow.services.firebase.getUser
 
@@ -23,6 +23,7 @@ fun HomeScreenNavGraph(
     navigateToRegisterScreen: () -> Unit,
 ) {
     val userService = remember { mutableStateOf(UserService()) }
+    val taskModel = remember { mutableStateOf(TaskModel()) }
     val isLoadingUser = remember { mutableStateOf(true) }
     LaunchedEffect(isLoadingUser.value) {
         if (isLoadingUser.value) {
@@ -37,14 +38,19 @@ fun HomeScreenNavGraph(
     ) {
         composable(route = BottomBarGraph.HOME) { Home(padding = padding) }
 
-        composable(route = BottomBarGraph.TASKS) { Tasks(padding) }
-
         composable(route = BottomBarGraph.INCOMINGNOTIFICATIONS) { IncomingNotifications(padding) }
 
         userProfileNavigationGraph(
             padding,
             navController = navController,
             userService = userService,
+            navigateToRegisterScreen = navigateToRegisterScreen,
+        )
+
+        taskInfoNavigationGraph(
+            padding,
+            navController = navController,
+            taskModel = taskModel,
             navigateToRegisterScreen = navigateToRegisterScreen,
         )
     }

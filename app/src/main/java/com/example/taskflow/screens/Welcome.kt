@@ -14,7 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.taskflow.R
 import com.ravenzip.workshop.components.SimpleButton
 import com.ravenzip.workshop.data.TextConfig
@@ -35,7 +37,7 @@ fun Welcome(navigateToRegistrationScreen: () -> Unit, navigateToLoginScreen: () 
         Spacer(modifier = Modifier.padding(top = 20.dp))
         SimpleButton(
             text = "Вход",
-            textConfig = TextConfig.Small,
+            textConfig = TextConfig(size = 14.sp, align = TextAlign.Center),
             shape = RoundedCornerShape(100)
         ) {
             navigateToLoginScreen()
@@ -43,7 +45,7 @@ fun Welcome(navigateToRegistrationScreen: () -> Unit, navigateToLoginScreen: () 
         Spacer(modifier = Modifier.padding(top = 20.dp))
         SimpleButton(
             text = "Регистрация",
-            textConfig = TextConfig.Small,
+            textConfig = TextConfig(size = 14.sp, align = TextAlign.Center),
             shape = RoundedCornerShape(100)
         ) {
             navigateToRegistrationScreen()

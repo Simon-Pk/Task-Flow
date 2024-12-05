@@ -11,7 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.taskflow.services.ValidationService
 import com.example.taskflow.services.firebase.UserService
 import com.example.taskflow.services.firebase.createUserWithEmail
@@ -19,7 +21,7 @@ import com.example.taskflow.services.firebase.getUser
 import com.example.taskflow.services.firebase.reloadUser
 import com.example.taskflow.services.showError
 import com.ravenzip.workshop.components.SimpleButton
-import com.ravenzip.workshop.components.SinglenessTextField
+import com.ravenzip.workshop.components.SinglenessOutlinedTextField
 import com.ravenzip.workshop.components.SnackBar
 import com.ravenzip.workshop.components.Spinner
 import com.ravenzip.workshop.data.TextConfig
@@ -42,10 +44,13 @@ fun Registration(navigateToHomeScreen: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        SinglenessTextField(text = email, label = "Email")
-        SinglenessTextField(text = password, label = "Password", isHiddenText = true)
+        SinglenessOutlinedTextField(text = email, label = "Email")
+        SinglenessOutlinedTextField(text = password, label = "Password", isHiddenText = true)
         Spacer(modifier = Modifier.padding(top = 20.dp))
-        SimpleButton(text = "Зарегистрироваться", textConfig = TextConfig.Small) {
+        SimpleButton(
+            text = "Зарегистрироваться",
+            textConfig = TextConfig(size = 14.sp, align = TextAlign.Center)
+        ) {
             scope.launch(Dispatchers.Main) {
                 isEmailValid.value = validationService.isEmailValid(email.value)
                 isPasswordValid.value = validationService.isPasswordValid(password.value)

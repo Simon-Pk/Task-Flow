@@ -23,7 +23,7 @@ import com.example.taskflow.services.firebase.getUser
 import com.example.taskflow.services.showError
 import com.example.taskflow.services.showSuccess
 import com.ravenzip.workshop.components.SimpleButton
-import com.ravenzip.workshop.components.SinglenessTextField
+import com.ravenzip.workshop.components.SinglenessOutlinedTextField
 import com.ravenzip.workshop.components.SnackBar
 import com.ravenzip.workshop.data.TextConfig
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +47,7 @@ fun ChangeName(padding: PaddingValues, userService: MutableState<UserService>) {
     }
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.height(20.dp))
-        SinglenessTextField(text = name, label = "Имя пользователя")
+        SinglenessOutlinedTextField(text = name, label = "Имя пользователя")
         Spacer(modifier = Modifier.height(40.dp))
         SimpleButton(
             text = "Сохранить",
