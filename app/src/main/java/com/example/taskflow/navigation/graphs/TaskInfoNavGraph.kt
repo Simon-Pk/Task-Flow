@@ -9,8 +9,8 @@ import androidx.navigation.navigation
 import com.example.taskflow.data.TaskModel
 import com.example.taskflow.navigation.models.BottomBarGraph
 import com.example.taskflow.navigation.models.TaskInfoGraph
-import com.example.taskflow.screens.TaskInfoScaffold
-import com.example.taskflow.screens.Tasks
+import com.example.taskflow.screens.TaskInfo.TaskInfoScaffold
+import com.example.taskflow.screens.TaskInfo.TasksScaffold
 
 fun NavGraphBuilder.taskInfoNavigationGraph(
     padding: PaddingValues,
@@ -20,10 +20,10 @@ fun NavGraphBuilder.taskInfoNavigationGraph(
 ) {
     navigation(route = BottomBarGraph.TASKS, startDestination = TaskInfoGraph.TASK_START) {
         composable(route = TaskInfoGraph.TASK_START) {
-            Tasks(
+            TasksScaffold(
                 padding = padding,
                 onClick = arrayOf({ navController.navigate(TaskInfoGraph.TASK_INFO) }),
-                taskModel = taskModel
+                taskModel = taskModel,
             )
         }
 

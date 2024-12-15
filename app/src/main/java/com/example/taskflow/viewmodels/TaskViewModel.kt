@@ -1,25 +1,27 @@
 package com.example.taskflow.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskflow.data.Comment
+import com.example.taskflow.data.Notifications
 import com.example.taskflow.data.Priority
 import com.example.taskflow.data.Status
 import com.example.taskflow.data.TaskModel
 import com.example.taskflow.data.User
-import com.example.taskflow.repositories.CommentRepository
+import com.example.taskflow.repositories.NotificationsRepository
 import com.example.taskflow.repositories.PriorityRepository
 import com.example.taskflow.repositories.StatusRepository
 import com.example.taskflow.repositories.TaskRepository
 import com.example.taskflow.repositories.UserRepository
-import com.google.firebase.database.DataSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.zip
@@ -33,47 +35,48 @@ constructor(
     private val priorityRepository: PriorityRepository,
     private val userRepository: UserRepository,
     private val statusRepository: StatusRepository,
-    private val commentRepository: CommentRepository,
+    private val notificationsRepository: NotificationsRepository,
 ) : ViewModel() {
+
     private val _priorityList = MutableStateFlow(listOf(Priority()))
     val priorityList = _priorityList.asStateFlow()
-
-    private val _commentList = MutableStateFlow(listOf(Comment()))
-    val commentList = _commentList.asStateFlow()
 
     private val _userList = MutableStateFlow(listOf(User()))
     val userList = _userList.asStateFlow()
     val currentUser = userRepository.currentUser
 
-    private val _taskList = MutableStateFlow(listOf(TaskModel()))
+    private val _taskList = MutableStateFlow(listOf<TaskModel>())
     val taskList = _taskList.asStateFlow()
-    val activeTabChanged = MutableSharedFlow<String>()
+
+    val _activeTabChanged = MutableStateFlow<String>("")
+    val activeTabChanged = _activeTabChanged.asStateFlow()
+
+    val activeTaskUpdated = MutableSharedFlow<TaskModel>()
+
     val currentTabTasks =
-        _taskList
+        taskList
             .combine(activeTabChanged) { taskList, activeTab ->
+                Log.d("currentTabTasks", activeTab)
                 taskList.filter { task ->
-                    task.status == activeTab && task.executor == userRepository.currentUser?.uid
+                    task.statusId == activeTab && task.executorId == userRepository.currentUser?.uid
                 }
             }
             .stateIn(viewModelScope, SharingStarted.Lazily, listOf())
-
     private val _statusList = MutableStateFlow(listOf(Status()))
     val statusList = _statusList.asStateFlow()
 
-    //    val prioritiesChips =
-    //        _priorityList
-    //            .map { priorityList -> generateListOfPriorities(priorityList) }
-    //            .stateIn(viewModelScope, SharingStarted.Lazily, mutableStateListOf())
-
-    //    val selectedPriority =
-    //        prioritiesChips
-    //            .map { prioritiesChips -> prioritiesChips.first { chip -> chip.isSelected } }
-    //            .zip(_priorityList) { chip, priorityList ->
-    //                priorityList.first { priority -> priority.name == chip.text }
-    //            }
-    //            .stateIn(viewModelScope, SharingStarted.Lazily, Priority())
-
     init {
+        Log.d("start viewmodel", "123")
+        viewModelScope.launch {
+            priorityRepository.getPriorityList().collect { priorityList ->
+                _priorityList.update { priorityList }
+            }
+        }
+
+        viewModelScope.launch {
+            userRepository.getUserList().collect { userList -> _userList.update { userList } }
+        }
+
         viewModelScope.launch {
             statusRepository
                 .getStatusList()
@@ -81,36 +84,27 @@ constructor(
                     _statusList.update { statusList }
                     _taskList.update { taskList }
                 }
-                .collect { activeTabChanged.emit("-OD8FWvgqOCsN5XdTcha") }
+                .collect { _activeTabChanged.update { statusList.value.first().uid } }
+        }
 
-            priorityRepository.getPriorityList().collect { priorityList ->
-                _priorityList.update { priorityList }
+        viewModelScope.launch {
+            activeTaskUpdated
+                .flatMapLatest { task -> taskRepository.updateTaskData(task) }
+                .combine(currentTabTasks) { task, tabTask -> currentTabTasks.collect { tabTask } }
+                .collect {}
+        }
+
+        viewModelScope.launch {
+            activeTabChanged.collect { activeTab ->
+                _activeTabChanged.update { activeTab }
+                Log.d("пиздапиздапизда", activeTab)
             }
+        }
 
-            commentRepository.getCommentsList().collect { commentList ->
-                _commentList.update { commentList }
-            }
-
-            userRepository.getUserList().collect { userList -> _userList.update { userList } }
+        viewModelScope.launch {
+            activeTaskUpdated.collect { Log.d("activeTaskUpdated", it.toString()) }
         }
     }
-
-    //    private fun generateListOfPriorities(
-    //        listOfPriority: List<Priority>
-    //    ): SnapshotStateList<SelectableChipConfig> {
-    //        return listOfPriority
-    //            .sortedBy { priority: Priority -> priority.code }
-    //            .mapIndexed { index, priority ->
-    //                SelectableChipConfig(
-    //                    isSelected = index == 0,
-    //                    text = priority.name,
-    //                    textConfig = TextConfig.Small,
-    //                    icon = Icon.ImageVectorIcon(Icons.Filled.LowPriority),
-    //                    iconConfig = IconConfig.Small
-    //                )
-    //            }
-    //            .toMutableStateList()
-    //    }
 
     suspend fun createTask(taskModel: TaskModel) {
         taskRepository.createTaskData(taskModel)
@@ -120,15 +114,18 @@ constructor(
         viewModelScope.launch { priorityRepository.createPriorityData(priority) }
     }
 
-    suspend fun getPriority(priorityUid: String): Iterable<DataSnapshot> {
-        return priorityRepository.getPriority(priorityUid)
+    suspend fun createNotification(notification: Notifications) {
+        notificationsRepository.createNotificationData(notification)
     }
 
-    suspend fun getStatus(statusUid: String): Iterable<DataSnapshot> {
-        return statusRepository.getStatus(statusUid)
+    fun updateActiveTab(tabUid: String) {
+        _activeTabChanged.update { tabUid }
+        viewModelScope.launch {
+            updateListTask(currentUser?.uid.toString(), activeTabChanged.value)
+        }
     }
 
-    suspend fun createComment(comment: Comment) {
-        commentRepository.createCommentsData(comment)
+    suspend fun updateListTask(executorId: String, statusId: String) {
+        _taskList.update { taskRepository.getListTasks(executorId, statusId) }
     }
 }

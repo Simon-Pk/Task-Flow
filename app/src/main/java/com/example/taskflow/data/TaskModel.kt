@@ -3,22 +3,22 @@ package com.example.taskflow.data
 data class TaskModel(
     val uid: String,
     val title: String,
-    val status: String,
+    val statusId: String,
     val content: String,
-    val executor: String,
+    val executorId: String,
     val finishDate: String,
-    val priority: String,
+    val priorityId: String,
     val startDate: String
 ) {
     constructor() :
         this(
             uid = "",
             title = "",
-            status = "",
+            statusId = "",
             content = "",
-            executor = "",
+            executorId = "",
             finishDate = "",
-            priority = "",
+            priorityId = "",
             startDate = ""
         )
 }

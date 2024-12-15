@@ -4,8 +4,8 @@ import android.util.Log
 import com.example.taskflow.Tools.convertToClass
 import com.example.taskflow.data.Status
 import com.example.taskflow.sources.StatusSources
-import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.getValue
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +34,9 @@ class StatusRepository @Inject constructor(private val statusSources: StatusSour
         statusSources.statusSource().child(statusUID).setValue(status.copy(uid = statusUID)).await()
     }
 
-    suspend fun getStatus(statusUid: String): Iterable<DataSnapshot> {
-        return statusSources.statusSource().child(statusUid).get().await().children
+    suspend fun getStatus(statusUid: String): Status? {
+        val response = statusSources.statusSource().child(statusUid).get().await()
+        val data = response.getValue<Status>()
+        return data
     }
 }

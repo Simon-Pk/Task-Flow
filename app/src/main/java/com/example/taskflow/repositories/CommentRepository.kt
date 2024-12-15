@@ -15,11 +15,18 @@ import kotlinx.coroutines.withContext
 
 @Singleton
 class CommentRepository @Inject constructor(private val commentSources: CommentSources) {
-    fun getCommentsList() =
+    fun getCommentsList(taskId: String) =
         flow {
-                val response = commentSources.commentsSource().get().await().children
-                val priorityList = response.convertToClass<Comment>()
-                emit(priorityList)
+                val response =
+                    commentSources
+                        .commentsSource()
+                        .orderByChild("taskId")
+                        .equalTo(taskId)
+                        .get()
+                        .await()
+                        .children
+                val commentsList = response.convertToClass<Comment>()
+                emit(commentsList)
             }
             .catch {
                 withContext(Dispatchers.Main) { Log.e("getCommentsList", "${it.message}") }

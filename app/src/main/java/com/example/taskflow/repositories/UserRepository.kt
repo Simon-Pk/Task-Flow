@@ -5,6 +5,7 @@ import com.example.taskflow.Tools.convertToClass
 import com.example.taskflow.data.User
 import com.example.taskflow.sources.UserSources
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.getValue
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
@@ -28,4 +29,14 @@ class UserRepository @Inject constructor(private val userSources: UserSources) {
 
     val currentUser: FirebaseUser?
         get() = userSources.currentUser
+
+    suspend fun getUserById(userUid: String): User {
+        val response = userSources.userSource().child(userUid).get().await()
+        val dataUser = response.getValue<User>()
+        if (dataUser != null) {
+            Log.d("UserData_get", dataUser.toString())
+            return dataUser
+        }
+        return User()
+    }
 }

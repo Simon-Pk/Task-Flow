@@ -38,7 +38,7 @@ class UserService() {
     suspend fun update(userData: User, name: String): Boolean {
         if (userData !== null) {
             val data = mapOf("name" to name)
-            databaseRef.child(userData.id).updateChildren(data)
+            databaseRef.child(userData.uid).updateChildren(data)
             return true
         } else {
             Log.d("Exception", "dataUser is null")

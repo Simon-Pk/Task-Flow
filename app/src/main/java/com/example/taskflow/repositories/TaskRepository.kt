@@ -5,6 +5,7 @@ import com.example.taskflow.Tools.convertToClass
 import com.example.taskflow.data.TaskModel
 import com.example.taskflow.sources.TaskSources
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.getValue
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
@@ -26,10 +27,55 @@ class TaskRepository @Inject constructor(private val taskSources: TaskSources) {
                 emit(listOf())
             }
 
+    suspend fun getListTasks(executorId: String, statusId: String): List<TaskModel> {
+        val response =
+            taskSources
+                .taskSource()
+                .orderByChild("executorId")
+                .equalTo(executorId)
+                .get()
+                .await()
+                .children
+        val listTasks = mutableListOf<TaskModel>()
+        response.forEach { data ->
+            val task = data.getValue<TaskModel>()
+            if (statusId == "") {
+                task?.let { listTasks.add(it) }
+            } else {
+                if (task?.statusId == statusId) { // Дополнительная фильтрация по statusId
+                    task?.let { listTasks.add(it) }
+                }
+            }
+        }
+        return listTasks
+    }
+
     suspend fun createTaskData(taskModel: TaskModel) {
         val firebase = FirebaseDatabase.getInstance()
-        //        val taskRef = firebase.getReference("Task")
         val taskUID = firebase.reference.push().key.toString()
         taskSources.taskSource().child(taskUID).setValue(taskModel.copy(uid = taskUID)).await()
     }
+
+    suspend fun updateTaskData(taskModel: TaskModel) =
+        flow {
+                val firebase = FirebaseDatabase.getInstance()
+                val taskData =
+                    mapOf(
+                        "uid" to taskModel.uid,
+                        "title" to taskModel.title,
+                        "startDate" to taskModel.startDate,
+                        "finishDate" to taskModel.finishDate,
+                        "priorityId" to taskModel.priorityId,
+                        "content" to taskModel.content,
+                        "executorId" to taskModel.executorId,
+                        "statusId" to taskModel.statusId
+                    )
+                taskSources.taskSource().child(taskModel.uid).updateChildren(taskData).await()
+                Log.d("updateTaskData", taskData.toString())
+                emit("success")
+            }
+            .catch {
+                withContext(Dispatchers.Main) { Log.e("updateTaskData", "${it.message}") }
+                emit("error")
+            }
 }

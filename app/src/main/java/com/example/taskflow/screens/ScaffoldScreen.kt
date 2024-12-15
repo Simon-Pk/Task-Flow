@@ -61,7 +61,7 @@ private fun generateMenuItems(): List<BottomNavigationItem> {
     val notificationsButton =
         BottomNavigationItem(
             label = "Входящие",
-            route = BottomBarGraph.INCOMINGNOTIFICATIONS,
+            route = BottomBarGraph.INCOMING_NOTIFICATIONS,
             icon = Icon.ImageVectorIcon(Icons.Outlined.Notifications),
             iconConfig = IconConfig.Primary,
             hasNews = false

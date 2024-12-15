@@ -1,4 +1,4 @@
-package com.example.taskflow.screens
+package com.example.taskflow.screens.TaskInfo
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Comment
+import androidx.compose.material.icons.filled.AddComment
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.taskflow.data.Comment
 import com.example.taskflow.data.TaskModel
-import com.example.taskflow.viewmodels.TaskViewModel
+import com.example.taskflow.viewmodels.TaskInfoViewModel
 import com.ravenzip.workshop.components.MultilineTextField
 import com.ravenzip.workshop.components.SimpleButton
 import com.ravenzip.workshop.components.TopAppBar
@@ -40,24 +40,24 @@ import kotlinx.coroutines.launch
 fun TaskInfoScaffold(
     padding: PaddingValues,
     taskInfo: MutableState<TaskModel>,
-    taskViewModel: TaskViewModel = hiltViewModel<TaskViewModel>(),
+    taskInfoViewModel: TaskInfoViewModel = hiltViewModel<TaskInfoViewModel>(),
 ) {
     val showBottomSheet = remember { mutableStateOf(false) }
     val commentContent = remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     Scaffold(
         modifier = Modifier.padding(padding),
-        topBar = { TopAppBar(title = "Главный экран", backArrow = null, items = listOf()) },
+        topBar = { TopAppBar(title = taskInfo.value.title, backArrow = null, items = listOf()) },
         floatingActionButtonPosition = FabPosition.EndOverlay,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showBottomSheet.value = true },
             ) {
-                Icon(Icons.Filled.Comment, contentDescription = "Добавить")
+                Icon(Icons.Filled.AddComment, contentDescription = "Добавить")
             }
         }
     ) { innerPadding ->
-        TaskInfo(padding = innerPadding, taskInfo = taskInfo, taskViewModel = taskViewModel)
+        TaskInfo(padding = innerPadding, taskInfo = taskInfo, taskInfoViewModel = taskInfoViewModel)
         if (showBottomSheet.value) {
             ModalBottomSheet(
                 onDismissRequest = { CloseModalSheet(showBottomSheet, commentContent) },
@@ -77,11 +77,12 @@ fun TaskInfoScaffold(
                         textConfig = TextConfig(size = 14.sp, align = TextAlign.Center)
                     ) {
                         scope.launch {
-                            taskViewModel.createComment(
+                            taskInfoViewModel.createComment(
                                 Comment(
                                     "",
                                     commentContent.value,
-                                    taskViewModel.currentUser?.uid.toString()
+                                    taskInfo.value.uid,
+                                    taskInfoViewModel.currentUser?.uid.toString()
                                 )
                             )
                             CloseModalSheet(showBottomSheet, commentContent)
