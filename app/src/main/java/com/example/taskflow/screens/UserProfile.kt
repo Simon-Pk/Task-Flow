@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.AccountCircle
@@ -79,188 +80,210 @@ fun UserProfile(
     val statusName = remember { mutableStateOf("") }
     val statusCode = remember { mutableStateOf("") }
 
-    Column(
+    LazyColumn(
         modifier = Modifier.fillMaxSize(),
         //        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        userScrollEnabled = true
     ) {
-        Spacer(modifier = Modifier.height(30.dp))
-        Text(
-            text = "Профиль",
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.fillMaxWidth(0.9f),
-            color = MaterialTheme.colorScheme.primary
-        )
-        Spacer(modifier = Modifier.height(30.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(0.85f),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {}
-        RowIconButton(
-            text = userFirebase?.email.toString(),
-            textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
-            icon = Icon.ImageVectorIcon(Icons.Outlined.AccountCircle),
-            iconConfig = IconConfig.Primary,
-        ) {
-            onClick[0]()
+        item {
+            Spacer(modifier = Modifier.height(30.dp))
+            Text(
+                text = "Профиль",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth(0.9f),
+                color = MaterialTheme.colorScheme.primary
+            )
         }
-        Spacer(modifier = Modifier.height(40.dp))
+
+        item {
+            Spacer(modifier = Modifier.height(30.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(0.85f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {}
+        }
+        item {
+            RowIconButton(
+                text = userFirebase?.email.toString(),
+                textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
+                icon = Icon.ImageVectorIcon(Icons.Outlined.AccountCircle),
+                iconConfig = IconConfig.Primary,
+            ) {
+                onClick[0]()
+            }
+            Spacer(modifier = Modifier.height(40.dp))
+        }
+
         //        Row(verticalAlignment = Alignment.CenterVertically) {
         //            Text(text = "Темная тема")
         //            Spacer(modifier = Modifier.padding(horizontal = 5.dp))
         //            Switch(checked = checked, onCheckedChange = { checked = it })
         //        }
-
-        Spacer(modifier = Modifier.padding(top = 10.dp))
-        RowIconButton(
-            text = "Создать приоритет",
-            textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
-            icon = Icon.ImageVectorIcon(Icons.Outlined.Policy),
-            iconConfig = IconConfig.Primary
-        ) {
-            showBottomSheet1 = true
-        }
-
-        Spacer(modifier = Modifier.padding(top = 10.dp))
-        RowIconButton(
-            text = "Создать статус",
-            textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
-            icon = Icon.ImageVectorIcon(Icons.Outlined.Policy),
-            iconConfig = IconConfig.Primary
-        ) {
-            showBottomSheet2 = true
-        }
-
-        if (showBottomSheet1) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    showBottomSheet1 = false
-                    priorityName.value = ""
-                    priorityValue.value = ""
-                    priorityCode.value = ""
-                },
-                sheetState = sheetState,
-                modifier = Modifier.padding(start = 10.dp)
+        item {
+            Spacer(modifier = Modifier.padding(top = 10.dp))
+            RowIconButton(
+                text = "Создать приоритет",
+                textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
+                icon = Icon.ImageVectorIcon(Icons.Outlined.Policy),
+                iconConfig = IconConfig.Primary
             ) {
-                Column(
-                    modifier = Modifier.fillMaxSize().padding(padding),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                showBottomSheet1 = true
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.padding(top = 10.dp))
+            RowIconButton(
+                text = "Создать статус",
+                textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
+                icon = Icon.ImageVectorIcon(Icons.Outlined.Policy),
+                iconConfig = IconConfig.Primary
+            ) {
+                showBottomSheet2 = true
+            }
+        }
+
+        item {
+            if (showBottomSheet1) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        showBottomSheet1 = false
+                        priorityName.value = ""
+                        priorityValue.value = ""
+                        priorityCode.value = ""
+                    },
+                    sheetState = sheetState,
+                    modifier = Modifier.padding(start = 10.dp)
                 ) {
-                    SinglenessOutlinedTextField(text = priorityName, label = "name")
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    SinglenessOutlinedTextField(text = priorityValue, label = "value")
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    SinglenessOutlinedTextField(text = priorityCode, label = "code")
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    SimpleButton(
-                        text = "Создать",
-                        textConfig = TextConfig(size = 14.sp, align = TextAlign.Center)
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(padding),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (
-                            priorityCode.value != "" &&
-                                priorityName.value != "" &&
-                                priorityValue.value != ""
+                        SinglenessOutlinedTextField(text = priorityName, label = "name")
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        SinglenessOutlinedTextField(text = priorityValue, label = "value")
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        SinglenessOutlinedTextField(text = priorityCode, label = "code")
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        SimpleButton(
+                            text = "Создать",
+                            textConfig = TextConfig(size = 14.sp, align = TextAlign.Center)
                         ) {
-                            profileViewModel.createPriority(
-                                Priority(
-                                    "",
-                                    priorityCode.value.toInt(),
-                                    priorityName.value,
-                                    priorityValue.value.toInt()
+                            if (
+                                priorityCode.value != "" &&
+                                    priorityName.value != "" &&
+                                    priorityValue.value != ""
+                            ) {
+                                profileViewModel.createPriority(
+                                    Priority(
+                                        "",
+                                        priorityCode.value.toInt(),
+                                        priorityName.value,
+                                        priorityValue.value.toInt()
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
             }
         }
+        item {
+            Spacer(modifier = Modifier.padding(top = 10.dp))
 
-        Spacer(modifier = Modifier.padding(top = 10.dp))
-
-        if (showBottomSheet2) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    showBottomSheet2 = false
-                    statusName.value = ""
-                },
-                sheetState = sheetState,
-                modifier = Modifier.padding(start = 10.dp)
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxSize().padding(padding),
-                    horizontalAlignment = Alignment.CenterHorizontally
+            if (showBottomSheet2) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        showBottomSheet2 = false
+                        statusName.value = ""
+                    },
+                    sheetState = sheetState,
+                    modifier = Modifier.padding(start = 10.dp)
                 ) {
-                    SinglenessOutlinedTextField(text = statusName, label = "name")
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    SinglenessOutlinedTextField(text = statusCode, label = "code")
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    SimpleButton(
-                        text = "Создать",
-                        textConfig = TextConfig(size = 14.sp, align = TextAlign.Center)
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(padding),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (statusName.value != "") {
+                        SinglenessOutlinedTextField(text = statusName, label = "name")
 
-                            profileViewModel.createStatus(
-                                Status(
-                                    "",
-                                    statusName.value,
-                                    statusCode.value.toInt(),
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        SinglenessOutlinedTextField(text = statusCode, label = "code")
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        SimpleButton(
+                            text = "Создать",
+                            textConfig = TextConfig(size = 14.sp, align = TextAlign.Center)
+                        ) {
+                            if (statusName.value != "") {
+
+                                profileViewModel.createStatus(
+                                    Status(
+                                        "",
+                                        statusName.value,
+                                        statusCode.value.toInt(),
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
             }
         }
+        item {
+            Spacer(modifier = Modifier.padding(top = 10.dp))
 
-        Spacer(modifier = Modifier.padding(top = 10.dp))
-
-        RowIconButton(
-            text = "Политика конфиденциальности",
-            textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
-            icon = Icon.ImageVectorIcon(Icons.Outlined.Policy),
-            iconConfig = IconConfig.Primary
-        ) {
-            context.startActivity(openURLPolicy)
+            RowIconButton(
+                text = "Политика конфиденциальности",
+                textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
+                icon = Icon.ImageVectorIcon(Icons.Outlined.Policy),
+                iconConfig = IconConfig.Primary
+            ) {
+                context.startActivity(openURLPolicy)
+            }
         }
-        Spacer(modifier = Modifier.padding(top = 10.dp))
-        RowIconButton(
-            text = "Пользовательское соглашение",
-            textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
-            icon = Icon.ImageVectorIcon(Icons.Outlined.Handshake),
-            iconConfig = IconConfig.Primary
-        ) {
-            context.startActivity(openURLuseragreement)
+        item {
+            Spacer(modifier = Modifier.padding(top = 10.dp))
+            RowIconButton(
+                text = "Пользовательское соглашение",
+                textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
+                icon = Icon.ImageVectorIcon(Icons.Outlined.Handshake),
+                iconConfig = IconConfig.Primary
+            ) {
+                context.startActivity(openURLuseragreement)
+            }
         }
-        Spacer(modifier = Modifier.padding(top = 10.dp))
-        RowIconButton(
-            text = "Версия приложения\n" + "Pre-Alpha",
-            textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
-            icon = Icon.ImageVectorIcon(Icons.Outlined.Smartphone),
-            iconConfig = IconConfig.Primary
-        ) {}
-        Spacer(modifier = Modifier.padding(top = 10.dp))
-        RowIconButton(
-            text = "Выход",
-            textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
-            icon = Icon.ImageVectorIcon(Icons.AutoMirrored.Outlined.Logout),
-            iconConfig = IconConfig.Primary
-        ) {
-            scope.launch(Dispatchers.Main) {
-                logout()
-                navigateToRegisterScreen()
+        item {
+            Spacer(modifier = Modifier.padding(top = 10.dp))
+            RowIconButton(
+                text = "Версия приложения\n" + "Pre-Alpha",
+                textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
+                icon = Icon.ImageVectorIcon(Icons.Outlined.Smartphone),
+                iconConfig = IconConfig.Primary
+            ) {}
+        }
+        item {
+            Spacer(modifier = Modifier.padding(top = 10.dp))
+            RowIconButton(
+                text = "Выход",
+                textConfig = TextConfig(size = 19.sp, align = TextAlign.Center),
+                icon = Icon.ImageVectorIcon(Icons.AutoMirrored.Outlined.Logout),
+                iconConfig = IconConfig.Primary
+            ) {
+                scope.launch(Dispatchers.Main) {
+                    logout()
+                    navigateToRegisterScreen()
+                }
             }
         }
     }

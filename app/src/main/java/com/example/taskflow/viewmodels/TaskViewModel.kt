@@ -66,7 +66,6 @@ constructor(
     val statusList = _statusList.asStateFlow()
 
     init {
-        Log.d("start viewmodel", "123")
         viewModelScope.launch {
             priorityRepository.getPriorityList().collect { priorityList ->
                 _priorityList.update { priorityList }
@@ -95,10 +94,7 @@ constructor(
         }
 
         viewModelScope.launch {
-            activeTabChanged.collect { activeTab ->
-                _activeTabChanged.update { activeTab }
-                Log.d("пиздапиздапизда", activeTab)
-            }
+            activeTabChanged.collect { activeTab -> _activeTabChanged.update { activeTab } }
         }
 
         viewModelScope.launch {

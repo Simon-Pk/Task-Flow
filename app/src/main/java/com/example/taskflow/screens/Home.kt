@@ -35,9 +35,9 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -117,6 +117,7 @@ fun TaskStatusBarChart(tasks: List<TaskModel>, homeViewModel: HomeViewModel) {
                     BarDataSet(entries, "Количество задач").apply {
                         colors = ColorTemplate.MATERIAL_COLORS.take(labels.size).toList()
                         valueTextSize = 12f
+                        valueTextColor = primaryColor
                     }
 
                 chart.data = BarData(dataSet)

@@ -61,7 +61,7 @@ fun TasksScaffold(
 ) {
     val scope = rememberCoroutineScope()
     val showBottomSheet = remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val taskName = remember { mutableStateOf("") }
     val taskContent = remember { mutableStateOf("") }
 
@@ -98,7 +98,7 @@ fun TasksScaffold(
                     CloseModalSheetList(showBottomSheet, taskName, taskContent, taskFinishDate)
                 },
                 sheetState = sheetState,
-                modifier = Modifier.fillMaxHeight(0.7f)
+                modifier = Modifier.fillMaxHeight()
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize().padding(padding),

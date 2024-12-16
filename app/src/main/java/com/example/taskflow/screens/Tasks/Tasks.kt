@@ -284,31 +284,6 @@ fun TaskCard(
                 maxLines = 3,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-
-            //            // Нижняя часть карточки: исполнитель и приоритет
-            //            Row(
-            //                modifier = Modifier.fillMaxWidth(),
-            //                horizontalArrangement = Arrangement.SpaceBetween,
-            //                verticalAlignment = Alignment.CenterVertically
-            //            ) {
-            ////                Text(
-            ////                    text = "Исполнитель: ${taskItem.executorId}", // Пример текста
-            ////                    style =
-            ////                        MaterialTheme.typography.bodySmall.copy(
-            ////                            color = MaterialTheme.colorScheme.onSurface.copy(alpha =
-            // 0.6f)
-            ////                        )
-            ////                )
-            //                Text(
-            //                    text = "Приоритет: ${taskItem.priorityId}", // Пример текста
-            //                    style =
-            //                        MaterialTheme.typography.bodySmall.copy(
-            //                            color = MaterialTheme.colorScheme.onSurface.copy(alpha =
-            // 0.6f),
-            //                            fontWeight = FontWeight.Medium
-            //                        )
-            //                )
-            //            }
         }
     }
 }
