@@ -33,4 +33,11 @@ constructor(
                 }
         }
     }
+
+    suspend fun updateNotificationsList() {
+        notificationsRepository.getNotificationsList(sharedRepository.currentUser?.uid).collect {
+            notificationsList ->
+            _notificationsList.update { notificationsList }
+        }
+    }
 }

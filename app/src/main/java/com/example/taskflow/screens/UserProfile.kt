@@ -192,6 +192,10 @@ fun UserProfile(
                                     )
                                 )
                             }
+                            showBottomSheet1 = false
+                            priorityName.value = ""
+                            priorityValue.value = ""
+                            priorityCode.value = ""
                         }
                     }
                 }
@@ -235,6 +239,8 @@ fun UserProfile(
                                     )
                                 )
                             }
+                            showBottomSheet2 = false
+                            statusName.value = ""
                         }
                     }
                 }

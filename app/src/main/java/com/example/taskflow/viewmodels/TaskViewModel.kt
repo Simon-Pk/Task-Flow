@@ -124,4 +124,18 @@ constructor(
     suspend fun updateListTask(executorId: String, statusId: String) {
         _taskList.update { taskRepository.getListTasks(executorId, statusId) }
     }
+
+    suspend fun updatePriorityList() {
+        priorityRepository.getPriorityList().collect { priorityList ->
+            _priorityList.update { priorityList }
+        }
+    }
+
+    suspend fun updateStatusList() {
+        statusRepository.getStatusList().collect { statusList -> _statusList.update { statusList } }
+    }
+
+    suspend fun updateUserList() {
+        userRepository.getUserList().collect { userList -> _userList.update { userList } }
+    }
 }

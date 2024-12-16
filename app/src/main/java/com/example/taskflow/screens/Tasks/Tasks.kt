@@ -68,11 +68,11 @@ fun Tasks(
     vararg onClick: () -> Unit,
     taskModel: MutableState<TaskModel>
 ) {
-    val pagerState = rememberPagerState(pageCount = { 4 })
     val scope = rememberCoroutineScope()
     val showBottomSheet = remember { mutableStateOf(false) }
 
     val statusList = taskViewModel.statusList.collectAsStateWithLifecycle().value
+    val pagerState = rememberPagerState(pageCount = { statusList.size })
     val currentTabTasks = taskViewModel.currentTabTasks.collectAsStateWithLifecycle().value
 
     val refreshState = rememberPullToRefreshState()
@@ -84,6 +84,9 @@ fun Tasks(
             scope.launch {
                 isRefreshing.value = true
                 taskViewModel.updateListTask(taskViewModel.currentUser?.uid.toString(), "")
+                taskViewModel.updatePriorityList()
+                taskViewModel.updateStatusList()
+                taskViewModel.updateUserList()
                 delay(1.seconds)
                 isRefreshing.value = false
             }
